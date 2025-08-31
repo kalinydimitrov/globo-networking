@@ -24,6 +24,13 @@ jobs:
         working-directory: network_config
 
     steps:
+      - name: Show repo tree
+        run: |
+          pwd
+          ls -la
+          echo "----"
+          ls -la */ || true
+
       - name: Checkout
         uses: actions/checkout@v4
 
