@@ -13,3 +13,6 @@
 
 # .pem files
 *.pem
+
+# tf lock files
+.terraform.lock.hcl

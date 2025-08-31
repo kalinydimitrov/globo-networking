@@ -2,9 +2,11 @@ name: Terraform
 
 on:
   push:
+    branches:
+      - main
     paths:
       - 'network_config/**'
-  workflow_dispatch:
+      - '.github/workflows/terraform.yml'
 
 env:
   TF_LOG: INFO
@@ -15,26 +17,18 @@ jobs:
   terraform:
     name: Terraform
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
+    
+    # Use the Bash shell regardless whether the GitHub Actions runner is 
+    # ubuntu-latest, macos-latest, or windows-latest
     defaults:
       run:
         shell: bash
-        working-directory: network_config
 
     steps:
-      - name: Show repo tree
-        run: |
-          pwd
-          ls -la
-          echo "----"
-          ls -la */ || true
-
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Use repo secrets: Settings → Secrets and variables → Actions
+      # Use repo secrets: Settings > Secrets and variables > Actions
       - name: Configure AWS credentials (keys)
         uses: aws-actions/configure-aws-credentials@v4
         with:
