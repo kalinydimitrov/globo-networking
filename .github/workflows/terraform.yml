@@ -3,13 +3,11 @@ name: Terraform
 on:
   push:
     branches: [ main ]
-    #  - main
     paths:
       - 'network_config/**'
       - '.github/workflows/terraform.yml'
   pull_request_target:
     branches: [ main ]
-    #  - main
     paths:
       - 'network_config/**'
       - '.github/workflows/terraform.yml'
@@ -63,3 +61,8 @@ jobs:
         with:
           name: tf-plan
           path: tf.plan
+
+      - name: Terraform Apply
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: terraform apply -no-color -input=false tf.plan
+              
