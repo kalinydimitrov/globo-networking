@@ -7,6 +7,12 @@ on:
     paths:
       - 'network_config/**'
       - '.github/workflows/terraform.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'network_config/**'
+      - '.github/workflows/terraform.yml'
 
 env:
   TF_LOG: INFO
