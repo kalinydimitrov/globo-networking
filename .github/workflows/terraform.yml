@@ -1,44 +1,58 @@
-name: 'Terraform'
+name: Terraform
 
-on: push
+on:
+  push:
+    paths:
+      - 'network_config/**'
+  workflow_dispatch:
 
 env:
   TF_LOG: INFO
-  TF_INPUT: false
+  TF_INPUT: "false"
+  AWS_REGION: us-east-1
 
 jobs:
   terraform:
-    name: 'Terraform'
+    name: Terraform
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
-    # Use the Bash shell regardless whether the GitHub Actions runner is 
-    # ubuntu-latest, macos-latest, or windows-latest
     defaults:
       run:
         shell: bash
+        working-directory: network_config
 
     steps:
-    # Checkout the repository to the GitHub Actions runner
-    - name: Checkout
-      uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    # Install the preferred version of Terraform CLI 
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
+      # Use repo secrets: Settings → Secrets and variables → Actions
+      - name: Configure AWS credentials (keys)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
-    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-    - name: Terraform Init
-      id: init
-      run: terraform init
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
 
-    # Run a terraform fmt for push
-    - name: Terraform Format
-      id: fmt
-      run: terraform fmt -check
+      - name: Terraform Init
+        run: terraform init -input=false
 
-    # Run a terraform validate
-    # Run even if formatting fails
-    - name: Terraform Validate
-      id: validate
-      if: (success() || failure())
-      run: terraform validate
+      - name: Terraform Format
+        run: terraform fmt -check
+
+      - name: Terraform Validate
+        if: always()
+        run: terraform validate -no-color
+
+      - name: Terraform Plan
+        run: terraform plan -no-color -out=tf.plan
+
+      - name: Upload plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: tf-plan
+          path: network_config/tf.plan
