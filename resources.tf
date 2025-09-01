@@ -67,10 +67,10 @@ resource "aws_security_group" "ingress" {
   vpc_id                 = module.main.vpc_id
 }
 
-# resource "aws_s3_bucket" "globo-terraform-state" {
-#   bucket = "globo-terraform-state"
+resource "aws_s3_bucket" "globo-terraform-state" {
+  bucket = "globo-terraform-state"
 
 
-#   tags = local.common_tags
+  tags = local.common_tags
 
-# }
+}
