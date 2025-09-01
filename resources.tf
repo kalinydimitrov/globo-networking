@@ -67,7 +67,6 @@ resource "aws_security_group" "ingress" {
   vpc_id                 = module.main.vpc_id
 }
 
-# temp disable S3 backend for state ###
 # resource "aws_s3_bucket" "globo-terraform-state" {
 #   bucket = "globo-terraform-state"
 
